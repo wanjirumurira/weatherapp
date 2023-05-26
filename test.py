@@ -1,31 +1,23 @@
-from tkinter import *
 import requests, json
-from PIL import ImageTk, Image
-from datetime import datetime
 import os
+from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
-
-#window
-master = Tk()
-master.title("Weather App")
-master.geometry("400x400")
-master.resizable(0, 0)
-
 
 def timestamp(timestamp):
     local_time = datetime.utcfromtimestamp(timestamp)
     return local_time
 
-city_name = StringVar()
-
 def show_weather():
     API_KEY = os.environ.get('API_KEY')
-    city = city_name.get()
+    city = input('city ')
     weather_url = requests.get('https://api.openweathermap.org/data/2.5/forecast?q=' + city + '&appid=' + API_KEY + '&units=metric')
+
     weather_info = weather_url.json()
-    tfield.delete("1.0", "end")
-    if weather_info['cod'] == 200:
+    http_status = weather_info['cod']
+    print(http_status)
+ 
+    if http_status == 200:
         city_value =  weather_info['city']['name']
         feels_like = weather_info['list'][0]['main']['feels_like']
         max_temp = weather_info['list'][0]['main']['feels_like']
@@ -37,21 +29,15 @@ def show_weather():
         timezone = timestamp(weather_info[city]['timezone']).time()
         
         weather = f"\nCity Name: {city_value}\nFeels Like: {feels_like} °C\nMin Temp:  {min_temp } °C\nMax Temp:  {max_temp } °C\nPrecipitation: {precipitation}%\nClouds: {clouds}\nSunrise: {sunrise}\nSunset: {sunset}\nTimezone: {timezone} GMT" 
-    
+        return (1)
     else:
-
-        weather = f"\n\tWeather for '{city}' not found!\n\tKindly Enter valid City Name!"   
+        weather = f"\n\tWeather for '{city}' not found!\n\tKindly Enter valid City Name!"  
+        return 0
     
-    tfield.insert(INSERT, weather)
-bg = ImageTk.PhotoImage(Image.open("weatherImage.png"))
-label = Label(master, image=bg)
-label.place(x = 0,y = 0)
+ 
+  
+ 
 
-label2 = Label(master, text = "Enter City Name", background='white',
-               font= 'Arial 12 bold').pack(pady = 10)
-cityNameEntry = Entry(master, textvariable=city_name, width=24, font='Arial 14 bold').pack()
-Button(master, command = show_weather, text = "Check Weather", font="Arial 10", bg='lightblue', fg='black', activebackground="teal", padx=5, pady=5 ).pack(pady= 20) 
-tfield = Text(master, width=46, height=10)
-tfield.pack()   
+  
 
-master.mainloop()
+print(show_weather())
